@@ -1,2 +1,7 @@
-# Rollup Basic Components
-- 工具库打包脚手架
+# Gif - Typescript
+
+- [Gif.js](https://github.com/jnordberg/gif.js.git)
+
+
+# TODO
+- [ ] index
