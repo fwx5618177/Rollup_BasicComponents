@@ -6,48 +6,55 @@ import alias from '@rollup/plugin-alias'
 import esbuild from 'rollup-plugin-esbuild'
 import typescript from 'rollup-plugin-typescript2'
 import babel from '@rollup/plugin-babel'
+import sourceMaps from 'rollup-plugin-sourcemaps'
+import multiEntry from '@rollup/plugin-multi-entry'
 
-const entries = ['src/index.ts']
+const entries = ['src/*.ts']
 
 const plugins = [
-  babel({
-    babelrc: false,
-    babelHelpers: 'bundled',
-    presets: [['env', { modules: false }]]
-  }),
-  resolve({
-    preferBuiltins: true
-  }),
-  alias(),
-  json(),
-  typescript(),
-  commonjs(),
-  esbuild()
+    multiEntry(),
+    babel({
+        babelrc: false,
+        babelHelpers: 'bundled',
+        presets: [['env', { modules: false }]],
+    }),
+    resolve({
+        preferBuiltins: true,
+    }),
+    alias(),
+    json(),
+    typescript({
+        exclude: ['node_modules/**', '**/test', '**/*.test.ts'],
+        typescript: require('typescript'),
+    }),
+    commonjs(),
+    esbuild(),
+    sourceMaps(),
 ]
 
 export default [
-  ...entries.map((input) => ({
-    input,
-    output: [
-      {
-        file: input.replace('src/', 'dist/').replace('.ts', '.mjs'),
-        format: 'esm'
-      },
-      {
-        file: input.replace('src/', 'dist/').replace('.ts', '.cjs'),
-        format: 'cjs'
-      }
-    ],
-    external: [],
-    plugins
-  })),
-  ...entries.map((input) => ({
-    input,
-    output: {
-      file: input.replace('src/', '').replace('.ts', '.d.ts'),
-      format: 'esm'
-    },
-    external: [],
-    plugins: [dts({ respectExternal: true })]
-  }))
+    ...entries.map(input => ({
+        input,
+        output: [
+            {
+                file: input.replace('src/', 'dist/').replace('.ts', '.mjs').replace('*', 'index'),
+                format: 'esm',
+            },
+            {
+                file: input.replace('src/', 'dist/').replace('.ts', '.cjs').replace('*', 'index'),
+                format: 'cjs',
+            },
+        ],
+        external: [],
+        plugins,
+    })),
+    ...entries.map(input => ({
+        input,
+        output: {
+            file: input.replace('src/', 'dist/types/').replace('.ts', '.d.ts').replace('*', 'index'),
+            format: 'esm',
+        },
+        external: [],
+        plugins: [multiEntry(), dts({ respectExternal: true })],
+    })),
 ]

@@ -7,9 +7,9 @@
  * test('ts') => 'hello ts'
  * ```
  *
- * @author ziming
  * @beta
+ * @author ziming
  */
-export const trim = (s: string): string => {
-    return (s || '').replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '')
+export const a = (test: string): string => {
+    return 'hello' + test
 }
